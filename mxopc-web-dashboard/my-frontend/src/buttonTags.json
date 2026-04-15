@@ -1,0 +1,26 @@
+[
+  {
+    "label": "CALL 1 LEFT",
+    "tagName": "ML_MTB_Andon.Layout.CALL_LH.ABS-1_CALL_1L"
+  },
+  {
+    "label": "CALL 2 LEFT",
+    "tagName": "ML_MTB_Andon.Layout.CALL_LH.ABS-2_CALL_2L"
+  },
+  {
+    "label": "CALL 3 LEFT",
+    "tagName": "ML_MTB_Andon.Layout.CALL_LH.ABS-3_CALL_3L"
+  },
+  {
+    "label": "BRT 1 LEFT",
+    "tagName": "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_1_CALL_1L"
+  },
+  {
+    "label": "BRT 2 LEFT",
+    "tagName": "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_2_CALL_2L"
+  },
+  {
+    "label": "BRT 3 LEFT",
+    "tagName": "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_3_CALL_3L"
+  }
+]

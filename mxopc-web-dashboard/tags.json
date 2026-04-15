@@ -1,0 +1,13 @@
+{
+  "machineName": "",
+  "serverName": "Mitsubishi.MXOPC.7",
+  "updateRate": 100,
+  "tags": [
+    "ML_MTB_Andon.Layout.CALL_LH.ABS-1_CALL_1L",
+    "ML_MTB_Andon.Layout.CALL_LH.ABS-2_CALL_2L",
+    "ML_MTB_Andon.Layout.CALL_LH.ABS-3_CALL_3L",
+    "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_1_CALL_1L",
+    "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_2_CALL_2L",
+    "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_3_CALL_3L"
+  ]
+}
