@@ -11,9 +11,10 @@ builder.Services.AddCors(options =>
         policy
             .WithOrigins(
                 "http://localhost:5173",
-                "https://mxopc-react-dotnet.vercel.app",
-                "https://mxopc-react-dotnet-fkhrbr5nc-abhidhalkars-projects.vercel.app",
-                "https://mxopc-react-dotnet-28aw2zzoy-abhidhalkars-projects.vercel.app"
+                "https://mxopc-react-dotnet.vercel.app"
+                //"https://mxopc-react-dotnet-fkhrbr5nc-abhidhalkars-projects.vercel.app",
+                //"https://mxopc-react-dotnet-28aw2zzoy-abhidhalkars-projects.vercel.app",
+                //"https://mxopc-react-dotnet-nenotjiao-abhidhalkars-projects.vercel.app"
             )
             .WithMethods("GET", "POST", "OPTIONS")
             .AllowAnyHeader();
