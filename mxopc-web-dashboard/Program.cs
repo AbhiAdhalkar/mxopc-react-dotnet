@@ -143,46 +143,48 @@ app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
         var errors = new List<object>();
 
         foreach (var attempt in attempts)
+{
+    try
+    {
+        using var writeClient = new EasyDAClient();
+
+        writeClient.WriteItemValue(
+            machineName,
+            config.ServerName,
+            request.TagName,
+            attempt.Value
+        );
+
+        return Results.Ok(new
         {
-            try
-            {
-                client.WriteItemValue(
-                    machineName,
-                    config.ServerName,
-                    request.TagName,
-                    attempt.Value
-                );
-
-                return Results.Ok(new
-                {
-                    success = true,
-                    tagName = request.TagName,
-                    previousValue = current,
-                    value = nextValue,
-                    writtenAs = attempt.TypeName
-                });
-            }
-            catch (Exception ex)
-            {
-                var chain = new List<string>();
-                var temp = ex;
-                while (temp != null)
-                {
-                    chain.Add($"{temp.GetType().FullName}: {temp.Message}");
-                    temp = temp.InnerException;
-                }
-
-                errors.Add(new
-                {
-                    typeTried = attempt.TypeName,
-                    valueTried = attempt.Value?.ToString(),
-                    exceptionType = ex.GetType().FullName,
-                    message = ex.Message,
-                    innerMessage = ex.InnerException?.Message,
-                    fullChain = chain
-                });
-            }
+            success = true,
+            tagName = request.TagName,
+            previousValue = current,
+            value = nextValue,
+            writtenAs = attempt.TypeName
+        });
+    }
+    catch (Exception ex)
+    {
+        var chain = new List<string>();
+        var temp = ex;
+        while (temp != null)
+        {
+            chain.Add($"{temp.GetType().FullName}: {temp.Message}");
+            temp = temp.InnerException;
         }
+
+        errors.Add(new
+        {
+            typeTried = attempt.TypeName,
+            valueTried = attempt.Value?.ToString(),
+            exceptionType = ex.GetType().FullName,
+            message = ex.Message,
+            innerMessage = ex.InnerException?.Message,
+            fullChain = chain
+        });
+    }
+}
 
         return Results.BadRequest(new
         {
