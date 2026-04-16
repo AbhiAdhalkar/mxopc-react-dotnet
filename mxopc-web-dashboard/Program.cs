@@ -117,11 +117,13 @@ app.MapGet("/api/tags/{tagName}", (string tagName) =>
 app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
 {
     if (string.IsNullOrWhiteSpace(request.TagName))
+    {
         return Results.BadRequest(new
         {
             success = false,
             error = "TagName is required."
         });
+    }
 
     try
     {
@@ -138,18 +140,12 @@ app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
             ("String", nextValue)
         };
 
-        var errors = new List<string>();
+        var errors = new List<object>();
 
         foreach (var attempt in attempts)
         {
             try
             {
-                Console.WriteLine($"Trying to write tag: {request.TagName}");
-                Console.WriteLine($"Current value: {current}");
-                Console.WriteLine($"Next value: {nextValue}");
-                Console.WriteLine($"Attempt type: {attempt.TypeName}");
-                Console.WriteLine($"Attempt value: {attempt.Value}");
-
                 client.WriteItemValue(
                     machineName,
                     config.ServerName,
@@ -157,39 +153,63 @@ app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
                     attempt.Value
                 );
 
-                Console.WriteLine($"Write succeeded with type: {attempt.TypeName}");
-
                 return Results.Ok(new
                 {
                     success = true,
                     tagName = request.TagName,
+                    previousValue = current,
                     value = nextValue,
                     writtenAs = attempt.TypeName
                 });
             }
             catch (Exception ex)
             {
-                var msg = $"Type {attempt.TypeName} failed: {ex.Message}";
-                errors.Add(msg);
-                Console.WriteLine(ex.ToString());
+                var chain = new List<string>();
+                var temp = ex;
+                while (temp != null)
+                {
+                    chain.Add($"{temp.GetType().FullName}: {temp.Message}");
+                    temp = temp.InnerException;
+                }
+
+                errors.Add(new
+                {
+                    typeTried = attempt.TypeName,
+                    valueTried = attempt.Value?.ToString(),
+                    exceptionType = ex.GetType().FullName,
+                    message = ex.Message,
+                    innerMessage = ex.InnerException?.Message,
+                    fullChain = chain
+                });
             }
         }
 
         return Results.BadRequest(new
         {
             success = false,
+            tagName = request.TagName,
+            currentValue = current,
+            nextValue = nextValue,
             error = "All write attempts failed.",
             details = errors
         });
     }
     catch (Exception ex)
     {
-        Console.WriteLine(ex.ToString());
+        var chain = new List<string>();
+        var temp = ex;
+        while (temp != null)
+        {
+            chain.Add($"{temp.GetType().FullName}: {temp.Message}");
+            temp = temp.InnerException;
+        }
 
         return Results.BadRequest(new
         {
             success = false,
-            error = ex.ToString()
+            error = ex.Message,
+            innerMessage = ex.InnerException?.Message,
+            fullChain = chain
         });
     }
 });
