@@ -9,6 +9,21 @@ function App() {
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 
+  const response = await fetch(`${apiBaseUrl}/api/tags`, {
+  headers: {
+    "ngrok-skip-browser-warning": "true"
+  }
+});
+
+  const response = await fetch(`${apiBaseUrl}/api/tags/write`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true"
+  },
+  body: JSON.stringify({ tagName })
+});
+
   useEffect(() => {
     let isMounted = true;
 
