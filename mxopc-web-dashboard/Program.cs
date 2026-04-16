@@ -123,7 +123,7 @@ app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
     {
         var current = store.Get(request.TagName)?.Value;
         var nextValue = string.IsNullOrWhiteSpace(current) || current == "0" ? "1" : "0";
-        var valueToWrite = nextValue == "1";
+        var valueToWrite = nextValue == "1" ? 1 : 0;
 
         client.WriteItemValue(
             machineName,
@@ -153,7 +153,7 @@ app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
         return Results.BadRequest(new
         {
             success = false,
-            error = ex.Message
+            error = ex.ToString()
         });
     }
 });
