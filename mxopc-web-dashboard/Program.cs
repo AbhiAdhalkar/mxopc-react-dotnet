@@ -117,31 +117,69 @@ app.MapGet("/api/tags/{tagName}", (string tagName) =>
 app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
 {
     if (string.IsNullOrWhiteSpace(request.TagName))
-        return Results.BadRequest("TagName is required.");
+        return Results.BadRequest(new
+        {
+            success = false,
+            error = "TagName is required."
+        });
 
     try
     {
-        var current = store.Get(request.TagName)?.Value;
+        var existingTag = store.Get(request.TagName);
+        var current = existingTag?.Value;
         var nextValue = string.IsNullOrWhiteSpace(current) || current == "0" ? "1" : "0";
-        short valueToWrite = nextValue == "1" ? (short)1 : (short)0;
 
-        Console.WriteLine($"Writing tag: {request.TagName}");
-        Console.WriteLine($"Current value: {current}");
-        Console.WriteLine($"Next value: {nextValue}");
-        Console.WriteLine($"Write type: {valueToWrite.GetType().Name}");
-
-        client.WriteItemValue(
-            machineName,
-            config.ServerName,
-            request.TagName,
-            valueToWrite
-        );
-
-        return Results.Ok(new
+        var attempts = new List<(string TypeName, object Value)>
         {
-            success = true,
-            tagName = request.TagName,
-            value = nextValue
+            ("Boolean", nextValue == "1"),
+            ("Int16", nextValue == "1" ? (short)1 : (short)0),
+            ("Int32", nextValue == "1" ? 1 : 0),
+            ("Byte", nextValue == "1" ? (byte)1 : (byte)0),
+            ("String", nextValue)
+        };
+
+        var errors = new List<string>();
+
+        foreach (var attempt in attempts)
+        {
+            try
+            {
+                Console.WriteLine($"Trying to write tag: {request.TagName}");
+                Console.WriteLine($"Current value: {current}");
+                Console.WriteLine($"Next value: {nextValue}");
+                Console.WriteLine($"Attempt type: {attempt.TypeName}");
+                Console.WriteLine($"Attempt value: {attempt.Value}");
+
+                client.WriteItemValue(
+                    machineName,
+                    config.ServerName,
+                    request.TagName,
+                    attempt.Value
+                );
+
+                Console.WriteLine($"Write succeeded with type: {attempt.TypeName}");
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    tagName = request.TagName,
+                    value = nextValue,
+                    writtenAs = attempt.TypeName
+                });
+            }
+            catch (Exception ex)
+            {
+                var msg = $"Type {attempt.TypeName} failed: {ex.Message}";
+                errors.Add(msg);
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        return Results.BadRequest(new
+        {
+            success = false,
+            error = "All write attempts failed.",
+            details = errors
         });
     }
     catch (Exception ex)
