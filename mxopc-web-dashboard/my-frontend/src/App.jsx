@@ -7,10 +7,16 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 
   useEffect(() => {
     let isMounted = true;
+
+    if (!apiBaseUrl) {
+      setError("VITE_API_BASE_URL is missing");
+      setLoading(false);
+      return;
+    }
 
     const fetchTags = async () => {
       try {
@@ -23,13 +29,13 @@ function App() {
         const data = await response.json();
 
         if (isMounted) {
-          setTags(data);
+          setTags(Array.isArray(data) ? data : []);
           setError("");
           setLoading(false);
         }
       } catch (err) {
         if (isMounted) {
-          setError(err.message);
+          setError(err.message || "Failed to fetch tags");
           setLoading(false);
         }
       }
@@ -57,6 +63,10 @@ function App() {
 
   const toggleTag = async (tagName) => {
     try {
+      if (!apiBaseUrl) {
+        throw new Error("VITE_API_BASE_URL is missing");
+      }
+
       const response = await fetch(`${apiBaseUrl}/api/tags/write`, {
         method: "POST",
         headers: {
@@ -65,13 +75,12 @@ function App() {
         body: JSON.stringify({ tagName })
       });
 
-      const text = await response.text();
-
       if (!response.ok) {
+        const text = await response.text();
         throw new Error(text || `HTTP error! Status: ${response.status}`);
       }
 
-      const result = JSON.parse(text);
+      const result = await response.json();
 
       setTags((prev) =>
         prev.map((tag) =>
@@ -79,8 +88,8 @@ function App() {
             ? {
                 ...tag,
                 value: result.value,
-                quality: "Good",
-                timestamp: new Date().toLocaleString(),
+                quality: result.quality ?? "Good",
+                timestamp: result.timestamp ?? new Date().toLocaleString(),
                 error: null
               }
             : tag
