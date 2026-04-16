@@ -9,7 +9,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("ReactPolicy", policy =>
     {
         policy
-            .WithOrigins("http://localhost:5173")
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://mxopc-react-dotnet.vercel.app",
+                "https://mxopc-react-dotnet-fkhrbr5nc-abhidhalkars-projects.vercel.app"
+            )
             .WithMethods("GET", "POST", "OPTIONS")
             .AllowAnyHeader();
     });
