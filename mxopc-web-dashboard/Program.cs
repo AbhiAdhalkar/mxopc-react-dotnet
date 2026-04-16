@@ -123,7 +123,12 @@ app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
     {
         var current = store.Get(request.TagName)?.Value;
         var nextValue = string.IsNullOrWhiteSpace(current) || current == "0" ? "1" : "0";
-        var valueToWrite = nextValue == "1" ? 1 : 0;
+        short valueToWrite = nextValue == "1" ? (short)1 : (short)0;
+
+        Console.WriteLine($"Writing tag: {request.TagName}");
+        Console.WriteLine($"Current value: {current}");
+        Console.WriteLine($"Next value: {nextValue}");
+        Console.WriteLine($"Write type: {valueToWrite.GetType().Name}");
 
         client.WriteItemValue(
             machineName,
@@ -131,15 +136,6 @@ app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
             request.TagName,
             valueToWrite
         );
-
-        store.Set(new TagData
-        {
-            TagName = request.TagName,
-            Value = nextValue,
-            Quality = "Good",
-            Timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
-            Error = null
-        });
 
         return Results.Ok(new
         {
@@ -150,6 +146,8 @@ app.MapPost("/api/tags/write", (ToggleTagRequest request) =>
     }
     catch (Exception ex)
     {
+        Console.WriteLine(ex.ToString());
+
         return Results.BadRequest(new
         {
             success = false,
