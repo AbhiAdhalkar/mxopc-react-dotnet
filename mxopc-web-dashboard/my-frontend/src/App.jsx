@@ -9,21 +9,6 @@ function App() {
 
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL?.trim();
 
-  const response = await fetch(`${apiBaseUrl}/api/tags`, {
-  headers: {
-    "ngrok-skip-browser-warning": "true"
-  }
-});
-
-  const response = await fetch(`${apiBaseUrl}/api/tags/write`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true"
-  },
-  body: JSON.stringify({ tagName })
-});
-
   useEffect(() => {
     let isMounted = true;
 
@@ -35,7 +20,11 @@ function App() {
 
     const fetchTags = async () => {
       try {
-        const response = await fetch(`${apiBaseUrl}/api/tags`);
+        const response = await fetch(`${apiBaseUrl}/api/tags`, {
+          headers: {
+            "ngrok-skip-browser-warning": "true"
+          }
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -85,7 +74,8 @@ function App() {
       const response = await fetch(`${apiBaseUrl}/api/tags/write`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true"
         },
         body: JSON.stringify({ tagName })
       });
