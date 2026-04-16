@@ -16,7 +16,7 @@ builder.Services.AddCors(options =>
                 //"https://mxopc-react-dotnet-28aw2zzoy-abhidhalkars-projects.vercel.app",
                 //"https://mxopc-react-dotnet-nenotjiao-abhidhalkars-projects.vercel.app"
             )
-            .AllowAnyMethod()
+            .WithMethods("GET", "POST", "OPTIONS")
             .AllowAnyHeader();
     });
 });
