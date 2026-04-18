@@ -4,21 +4,19 @@ using OpcLabs.EasyOpc.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactPolicy", policy =>
     {
-        policy
-            .WithOrigins(
-                "http://localhost:5173",
-                "https://mxopc-react-dotnet.vercel.app",
-                "https://mxopc-react-dotnet-o4eucgbyv-abhiadhalkars-projects.vercel.app"
-                //"https://mxopc-react-dotnet-fkhrbr5nc-abhidhalkars-projects.vercel.app",
-                //"https://mxopc-react-dotnet-28aw2zzoy-abhidhalkars-projects.vercel.app",
-                //"https://mxopc-react-dotnet-nenotjiao-abhidhalkars-projects.vercel.app"
+        policy.WithOrigins(
+                "http://localhost:5173"
+                //"https://mxopc-react-dotnet.vercel.app",
+                //"https://mxopc-react-dotnet-o4eucgbyv-abhiadhalkars-projects.vercel.app"
             )
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
@@ -27,6 +25,8 @@ builder.Services.AddSingleton<OpcStore>();
 var app = builder.Build();
 
 app.UseCors("ReactPolicy");
+//app.UseCors("VercelPolicy");
+
 
 var client = new EasyDAClient();
 var store = app.Services.GetRequiredService<OpcStore>();

@@ -20,11 +20,7 @@ function App() {
 
     const fetchTags = async () => {
       try {
-        const response = await fetch(`${apiBaseUrl}/api/tags`, {
-          headers: {
-            "ngrok-skip-browser-warning": "true"
-          }
-        });
+        const response = await fetch(`${apiBaseUrl}/api/tags`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -74,8 +70,7 @@ function App() {
       const response = await fetch(`${apiBaseUrl}/api/tags/write`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "ngrok-skip-browser-warning": "true"
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({ tagName })
       });
