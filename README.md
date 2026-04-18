@@ -9,6 +9,7 @@ This project has:
 - **QuickOPC / EasyDAClient** for communication with the OPC DA server.
 - A **JSON-based button configuration** in the frontend.
 - A **JSON-based tag subscription configuration** in the backend.
+- **Postman** used for API testing and endpoint validation
 
 ---
 
@@ -21,6 +22,7 @@ This project has:
 - Button metadata stored in JSON
 - Responsive split-screen dashboard
 - Independent scroll areas for cards and buttons
+- API testing and validation using Postman
 
 ---
 
@@ -40,6 +42,7 @@ This project has:
 ## Communication
 - HTTP REST API
 - CORS enabled for local frontend development
+- Postman for API testing
 
 ---
 
@@ -59,6 +62,10 @@ The backend:
 - Stores current values in memory using `ConcurrentDictionary`
 - Exposes REST endpoints for reading tags and toggling selected tags
 
+## API Testing
+- API endpoints were tested and validated using Postman.
+- Used Postman to verify GET and POST behavior, payload handling, and backend responses during development
+
 ## OPC Flow
 1. Backend starts
 2. Backend loads `tags.json`
@@ -73,31 +80,37 @@ The backend:
 # Project Structure
 
 ```text
-project-root/
+mxopc-web-dashboard/
 │
-├── backend/
-│   ├── Program.cs
-│   ├── tags.json
-│   ├── backend.csproj
-│   ├── appsettings.json
-│   ├── Properties/
-│   └── bin/
-│
-├── frontend/
-│   ├── src/
-│   │   ├── App.jsx
-│   │   ├── App.css
-│   │   ├── main.jsx
-│   │   └── buttonTags.json
+├── bin/
+├── my-frontend/
+│   ├── dist/
+│   ├── node_modules/
 │   ├── public/
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── buttonTags.json
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── .env
+│   ├── .gitignore
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
 │   ├── package.json
-│   ├── vite.config.js
-│   └── .env
+│   ├── README.md
+│   └── vite.config.js
 │
+├── obj/
+├── MyFirstApp.csproj
+├── Program.cs
+├── tags.json
+├── .gitignore
+├── Personal_Projects.sln
 └── README.md
 ```
-
-If your actual folder names differ, update the commands below accordingly.
 
 ---
 
@@ -120,6 +133,8 @@ Before running this project, make sure the following are installed.
 - QuickOPC package installed via NuGet
 - DCOM / OPC permissions configured correctly if the OPC server is remote
 
+### API Testing
+- Postman for testing API endpoints
 ---
 
 # Recommended Versions
@@ -127,28 +142,28 @@ Before running this project, make sure the following are installed.
 These are recommended stable versions for this project.
 
 ## Frontend
-- Node.js 18.x or 20.x
-- npm 9.x or 10.x
-- Vite 5.x or later
-- React 18.x
+- Node.js v20.11.0
+- npm 10.2.4
+- vite@8.0.8
+- React 18.3.1
 
-Vite documents the standard local dev server and production build flow used in this project. [web:469][web:472]
 
 ## Backend
 - .NET 8 SDK recommended
 - ASP.NET Core Minimal API on .NET 8
 
-Microsoft documents Minimal APIs and configuration/environment behavior for ASP.NET Core, which matches the backend pattern used here. [web:470][web:473]
 
 ## OPC Library
 - QuickOPC / OpcLabs EasyOPC DataAccess package version used in your project
 
-If you want exact package versions recorded, run:
+exact package versions command, run:
 ```bash
 dotnet list package
+
+Top-level Package       Requested   Resolved 
+ > OpcLabs.QuickOpc      5.83.1134   5.83.1134
 ```
 
-and copy the results into this README.
 
 ---
 
@@ -156,7 +171,7 @@ and copy the results into this README.
 
 ## Frontend Environment Variable
 
-Create a `.env` file inside the frontend folder:
+Created a `.env` file inside the frontend folder:
 
 ```env
 VITE_API_BASE_URL=http://localhost:5000
@@ -164,7 +179,7 @@ VITE_API_BASE_URL=http://localhost:5000
 
 ### Meaning
 - `VITE_API_BASE_URL` = backend API base URL
-- Vite exposes only variables prefixed with `VITE_` to frontend code. [web:469]
+- Vite exposes only variables prefixed with `VITE_` to frontend code.
 
 ---
 
@@ -178,13 +193,29 @@ Example:
 
 ```json
 {
-  "MachineName": "",
-  "ServerName": "Your.OPC.Server.Name",
-  "UpdateRate": 500,
-  "Tags": [
+  "machineName": "",
+  "serverName": "Your.OPC.Server.Name",
+  "updateRate": 500,
+  "tags": [
     "Tag1",
     "Tag2",
     "Tag3"
+  ]
+}
+```
+
+```json
+{
+  "machineName": "",
+  "serverName": "Mitsubishi.MXOPC.7",
+  "updateRate": 100,
+  "tags": [
+    "ML_MTB_Andon.Layout.CALL_LH.ABS-1_CALL_1L",
+    "ML_MTB_Andon.Layout.CALL_LH.ABS-2_CALL_2L",
+    "ML_MTB_Andon.Layout.CALL_LH.ABS-3_CALL_3L",
+    "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_1_CALL_1L",
+    "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_2_CALL_2L",
+    "ML_MTB_Andon.Layout.CALL_LH.BREAK_TESTER_3_CALL_3L"
   ]
 }
 ```
@@ -228,8 +259,6 @@ Example:
 git clone <your-repository-url>
 cd <your-project-folder>
 ```
-
-If you are not using Git, simply place the frontend and backend folders in one workspace.
 
 ---
 
@@ -278,6 +307,9 @@ dotnet restore
 Run the backend:
 
 ```bash
+dotnet build
+```
+```bash
 dotnet run
 ```
 
@@ -294,8 +326,6 @@ To force a port:
 ```bash
 dotnet run --urls=http://localhost:5000
 ```
-
-Microsoft documents Minimal API development and local launch behavior for ASP.NET Core apps. [web:470][web:473]
 
 ---
 
@@ -506,11 +536,21 @@ You can change this in `App.jsx`:
 ```js
 const interval = setInterval(fetchTags, 500);
 ```
-
 For example:
 - `500` = 0.5 second
 - `1000` = 1 second
 - `200` = faster refresh but more HTTP traffic
+
+## API Testing
+Postman was used to:
+
+'''
+- test GET /api/tags
+- test GET /api/tags/{tagName}
+- test POST /api/tags/write
+- verify request payloads and backend responses
+- debug API behavior during frontend-backend integration
+'''
 
 ## OPC Performance
 For large numbers of tags:
@@ -615,17 +655,6 @@ dotnet --version
 dotnet list package
 ```
 
-Add the output here after installation.
-
-### Example format
-```text
-Node.js: v20.11.1
-npm: 10.2.4
-React: 18.x
-Vite: 5.x
-.NET SDK: 8.0.x
-QuickOPC: <your-installed-version>
-```
 
 ---
 
